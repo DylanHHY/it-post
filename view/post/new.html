@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>New Article</title>
+  </head>
+  <body>
+    <h1>Create New Article</h1>
+    <form id="postForm">
+      <label for="title">Title:</label><br />
+      <input type="text" id="title" name="title" /><br />
+      <label for="content">Content:</label><br />
+      <textarea id="content" name="content"></textarea><br />
+      <button type="submit">Create</button>
+    </form>
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    document
+      .getElementById("postForm")
+      .addEventListener("submit", function (event) {
+        event.preventDefault();
+        var title = document.getElementById("title").value;
+        var content = document.getElementById("content").value;
+
+        // 创建一个包含表单数据的对象
+        var formData = {
+          title: title,
+          content: content,
+        };
+
+        axios
+          .post("http://127.0.0.1:8080/posts", formData)
+          .then(function (response) {
+            console.log(response.data);
+            alert("Post created successfully!");
+            // Redirect to the home page or any other page you desire
+            window.location.href = "http://127.0.0.1:5500/";
+          })
+          .catch(function (error) {
+            console.error("Error:", error);
+            alert("An error occurred while creating the post!");
+          });
+      });
+  </script>
+</html>

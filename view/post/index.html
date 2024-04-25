@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Posts</title>
+    <style>
+      /* Flexbox container styles */
+      .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      .button-container {
+        display: flex;
+        align-items: center;
+      }
+      .button-container a {
+        margin-left: 10px;
+      }
+
+      /* Table styles */
+      body {
+        width: 1000px;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Flexbox container for header -->
+    <div class="header-container">
+      <h1>Post</h1>
+      <!-- Button container with flexbox -->
+      <div class="button-container">
+        <a href="new.html">New</a>
+        <!-- Add more buttons as needed -->
+      </div>
+    </div>
+
+    <!-- Table for posts -->
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Content</th>
+          <th>Updata</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody id="postsList">
+        <!-- Articles will be dynamically added here -->
+      </tbody>
+    </table>
+
+    <!-- Script to fetch and render articles -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+      // Function to fetch posts from the API
+      async function fetchPosts() {
+        try {
+          const response = await axios.get("http://127.0.0.1:8080/");
+          console.log(response.data.posts);
+          return response.data.posts;
+        } catch (error) {
+          console.error("Error fetching posts:", error);
+          return [];
+        }
+      }
+
+      // Function to render articles
+      async function renderArticles() {
+        const postsList = document.getElementById("postsList");
+        postsList.innerHTML = ""; // Clear previous content
+        const posts = await fetchPosts();
+        posts.forEach((post) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+          <td>${post.title}</td>
+          <td>${post.content}</td>
+          <td><a href="edit.html">Edit</a></td>
+          <td><a>Delete</a></td>
+        `;
+          postsList.appendChild(row);
+        });
+      }
+
+      // Render articles when the page loads
+      document.addEventListener("DOMContentLoaded", renderArticles);
+    </script>
+  </body>
+</html>
