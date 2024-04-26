@@ -55,8 +55,8 @@ func main() {
 		id := c.Param("id")
 		var post model.Post
 		
-		if err := database.DB.First(&post, id).Error; err != nil{
-			c.JSON(http.StatusInternalServerError, gin.H{
+		if err := database.DB.First(&post, id).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{
 				"error": "Failed to fetch posts",
 			})
 			return
@@ -67,5 +67,46 @@ func main() {
 		})
 	})
 
+	r.PUT("/posts/:id", func (c *gin.Context) {
+		id := c.Param("id")
+		var post model.Post
+
+		if err := database.DB.First(&post, id).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{
+				"error": "Failed to fetch posts",
+			})	
+			return
+		}
+
+		if err := c.ShouldBindJSON(&post); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "Bad request data",
+			})
+			return
+		} 
+
+		if err := database.DB.Save(&post).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": "Failed to update post",
+			})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Post updated successfully",
+		})
+	})
+
+	r. DELETE("posts/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		if err := database.DB.Delete(&model.Post{}, id).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{
+				"error": "Post not found",
+			})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{ "message": "Delete post successfully",})
+	})
 	r.Run() // listen and serve on 0.0.0.0:8080
 }
